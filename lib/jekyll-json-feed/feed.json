@@ -1,0 +1,62 @@
+{
+    "version": "https://jsonfeed.org/version/1",
+    {% if site.title %}
+    "title": {{ site.title | smartify | jsonify }},
+    {% elsif site.name %}
+    "title": {{ site.name | smartify | jsonify }},
+    {% endif %}
+    {% if site.description %}
+    "description": {{ site.description | jsonify }},
+    {% endif %}
+    "home_page_url": {{ '/' | absolute_url | jsonify }},
+    "feed_url": {{ page.url | absolute_url | jsonify }},
+    {% if site.author %}
+    "author": {
+        "name": {{ site.author.name | default: site.author | jsonify }}
+        {% if site.author.uri %}
+        , "url": {{ site.author.uri  | jsonify }}
+        {% endif %}
+        {% if site.author.avatar %}
+        , "avatar": {{ site.author.avatar | jsonify }}
+        {% endif %}
+    },
+    {% endif %}
+    "items": [
+      {% assign posts = site.posts | where_exp: "post", "post.draft != true" %}
+      {% for post in posts limit: 10 %}
+        {
+            "id": {{ post.id | absolute_url | jsonify }},
+            "url": {{ post.url | absolute_url | jsonify }},
+            "title": {{ post.title | smartify | strip_html | normalize_whitespace | jsonify }},
+            "content_html": {{ post.content | strip | jsonify }},
+            {% if post.excerpt and post.excerpt != empty %}
+            "summary": {{ post.excerpt | strip_html | normalize_whitespace | jsonify }},
+            {% endif %}
+            {% assign post_image = post.image.path | default: post.image %}
+            {% if post_image %}
+              {% unless post_image contains "://" %}
+                {% assign post_image = post_image | absolute_url | xml_escape  %}
+              {% endunless %}
+              "image": {{ post_image | jsonify }},
+            {% endif %}
+            {% assign post_banner_image = post.banner_image.path | default: post.banner_image %}
+            {% if post_banner_image %}
+            "banner_image": {{ post_banner_image | jsonify }},
+            {% endif %}
+            "date_published": "{{ post.date | date_to_xmlschema }}",
+            "date_modified": "{{ post.last_modified_at | default: post.date | date_to_xmlschema }}",
+            {% assign post_author = post.author | default: post.authors[0] | default: site.author %}
+            {% assign post_author = site.data.authors[post_author] | default: post_author %}
+            {% assign post_author_uri = post_author.uri | default: nil %}
+            {% assign post_author_name = post_author.name | default: post_author %}
+            "author": {
+              "name": {{ post_author_name | default: "" | jsonify }}
+              {% if post_author_uri != nil %}
+              , "url": {{ post_author_uri | jsonify }}
+              {% endif %}
+            },
+            "tags": {{ post.tags | jsonify }}
+        }{% unless forloop.last == true %},{% endunless %}
+      {% endfor %}
+    ]
+}
