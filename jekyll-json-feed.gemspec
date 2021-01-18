@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "jekyll-json-feed"
-  spec.version       = "1.0.0"
+  spec.version       = "1.0.1"
   spec.authors       = ["Colin Seymour"]
   spec.email         = ["lildood@gmail.com"]
   spec.summary       = "A Jekyll plugin to generate a JSON feed of your Jekyll posts"
