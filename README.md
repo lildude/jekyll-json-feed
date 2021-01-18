@@ -15,10 +15,11 @@ gem 'jekyll-json-feed'
 And then add this line to your site's `_config.yml`:
 
 ```yml
-gems:
+plugins:
   - jekyll-json-feed
 ```
 
+⚠️ If you are using Jekyll < 3.5.0 use the `gems` key instead of `plugins`.
 ## Usage
 
 The plugin will automatically generate a JSON feed at `/feed.json`.
